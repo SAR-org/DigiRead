@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Keyboard,
+    Alert,
 } from 'react-native';
 import Textarea from 'react-native-textarea';
 import axios from 'axios';
@@ -171,7 +172,7 @@ const styles = StyleSheet.create({
     },
     textareaContainer: {
         height: 180,
-        //padding: 5,
+        marginTop: 30,
     },
     textAreaInput: {
         height: 170,

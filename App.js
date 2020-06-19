@@ -12,6 +12,7 @@ import {
   View,
   Text,
   AsyncStorage,
+  Dimensions,
 } from 'react-native';
 import axios from 'axios';
 import RootDrawerNavigator from './route/LibraryDrawer';
@@ -109,7 +110,7 @@ class App extends React.Component{
   render(){
     //global.currentScreenIndex = 0;
     return(
-      <View style={{ flex: 1 }}>
+      <View style={styles.container}>
       < AppContainer screenProps={{
         favouriteBookIds: this.state.favouriteBookIds,
         recentlyPublishedBooks: this.state.recentlyPublishedBooks,
@@ -136,8 +137,10 @@ const AppContainer = createAppContainer(AppSwitchNavigator);
 const styles = StyleSheet.create({
   container : {
     flex :1,
-    justifyContent : 'center',
-    alignItems : 'center',
+    height : Dimensions.get('screen').height,
+    width : Dimensions.get('screen').width,
+    //justifyContent : 'center',
+    //alignItems : 'center',
   }
 })
 

@@ -8,10 +8,11 @@ import BookViewHeader from '../shared/bookViewHeader';
 import LinearGradient from 'react-native-linear-gradient';
 
 const screens = {
-
+//console.warn('statusBarHeight: '+useHeaderHeight());
     LibraryHome : {
         screen : LibraryHome,
         navigationOptions : ({navigation})=>{
+
             return{
                 headerTitle : ()=> <Header 
                 headerText='DigiRead'
@@ -51,13 +52,15 @@ const screens = {
             }
             
         }
+
     },
 }
 
 const bookLibraryStack = createStackNavigator(screens,{
     defaultNavigationOptions : {
         headerTintColor : '#444',
-        headerStyle : {backgroundColor : '#eee',height : 60}
+        headerStyle : {backgroundColor : '#eee',height : 90},
+	//safeAreaInsets: { top: 40}
     }
 });
 

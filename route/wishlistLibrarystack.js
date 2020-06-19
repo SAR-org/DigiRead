@@ -51,7 +51,7 @@ const screens = {
 const wishlistLibrarystack = createStackNavigator(screens,{
     defaultNavigationOptions : {
         headerTintColor : '#444',
-        headerStyle : {backgroundColor : '#eee',height : 60}
+        headerStyle : {backgroundColor : '#eee',height : 90}
     }
 });
 

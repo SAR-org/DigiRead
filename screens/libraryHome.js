@@ -662,7 +662,7 @@ const styles = StyleSheet.create({
   },
   categoryPaneItem: {
     fontSize: 10,
-    fontFamily : 'NotoSerif-Regular',
+    //fontFamily : 'NotoSerif-Regular',
     paddingLeft: 3,
     paddingRight : 3,
   },

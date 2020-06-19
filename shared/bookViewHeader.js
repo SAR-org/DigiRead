@@ -74,7 +74,7 @@ class BookViewHeader extends React.Component {
     downloadBook = async() => {
 
         try {
-            if(Platform.OS != 'android'){
+            if(Platform.OS == 'android'){
                 const granted = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
                 );
@@ -118,7 +118,7 @@ class BookViewHeader extends React.Component {
                     description: 'Downloading image.'
                     }
 
-                    config(options).fetch('GET', bookUri).then((res) => {
+                    config(options).fetch('GET', bookUri).then((resp) => {
                         RNFetchBlob.ios.openDocument(resp.data);
                     })
             }
