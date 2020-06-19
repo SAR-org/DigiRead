@@ -7,6 +7,7 @@ import {
     AsyncStorage,
     PermissionsAndroid,
     Alert,
+    Platform,
 } from 'react-native';
 import axios from 'axios';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -73,38 +74,55 @@ class BookViewHeader extends React.Component {
     downloadBook = async() => {
 
         try {
-            const granted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-            );
-            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            if(Platform.OS != 'android'){
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+                );
+                if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    const bookUri = this.props.downloadUri;
+                    let fileName = bookUri.substring(bookUri.lastIndexOf('/') + 1, bookUri.length)
+                    const { config, fs } = RNFetchBlob
+                    let DownloadDir = fs.dirs.DownloadDir    
+                    let options = {
+                        fileCache: true,
+                        addAndroidDownloads: {
+                            useDownloadManager: true,
+                            notification: true,
+                            path: DownloadDir + "/DigiRead/"+fileName, 
+                            description: 'Downloading image.'
+                        }
+                    }
+                    config(options).fetch('GET', bookUri).then((res) => {
+                        // do some magic here
+                    })
+                    this.increaseDownloadCount(this.props.thisBookId.toString());
+    
+                }else{
+                    Alert.alert("Please allow permission", "Please allow permission to save file in your storage", [
+                          {
+                            text: "Noted",
+                            onPress: () => null,
+                            style: "cancel"
+                          }
+                        ]);
+                }
+            }else{
+                
                 const bookUri = this.props.downloadUri;
                 let fileName = bookUri.substring(bookUri.lastIndexOf('/') + 1, bookUri.length)
                 const { config, fs } = RNFetchBlob
-                let DownloadDir = fs.dirs.DownloadDir    
+                let DownloadDir =RNFetchBlob.fs.dirs.DocumentDir
                 let options = {
                     fileCache: true,
-                    addAndroidDownloads: {
-                        useDownloadManager: true,
-                        notification: true,
-                        path: DownloadDir + "/DigiRead/"+fileName, 
-                        description: 'Downloading image.'
+                    path: DownloadDir + "/DigiRead/"+fileName, 
+                    description: 'Downloading image.'
                     }
-                }
-                config(options).fetch('GET', bookUri).then((res) => {
-                    // do some magic here
-                })
-                this.increaseDownloadCount(this.props.thisBookId.toString());
 
-            }else{
-                Alert.alert("Please allow permission", "Please allow permission to save file in your storage", [
-                      {
-                        text: "Cancel",
-                        onPress: () => null,
-                        style: "cancel"
-                      },
-                      { text: "YES", onPress: () => BackHandler.exitApp() }
-                    ]);
+                    config(options).fetch('GET', bookUri).then((res) => {
+                        RNFetchBlob.ios.openDocument(resp.data);
+                    })
             }
+            
         } catch (err) {
             console.warn(err);
         }
