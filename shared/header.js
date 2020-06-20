@@ -3,7 +3,7 @@ import {
     StyleSheet,
     Text,
     View,
-    Image,
+    Platform,
     Dimensions,
 } from 'react-native';
 import  MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -38,8 +38,9 @@ class Header extends React.Component{
 const styles = StyleSheet.create({
     header : {
 	//flex : 1,
-        width : Dimensions.get('screen').width,
-        //height : '100%',
+        width : Platform.OS=='ios'?Dimensions.get('screen').width : '100%',
+        //width : '100%',
+        height : '100%',
         flexDirection : 'row',
         alignItems : 'center',
         justifyContent : 'center',
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     icon : {
         position : 'absolute',
 //	justifyContent :'flex-start',
-        left : 20,
+        left : Platform.OS=='ios'?20:0,
     },
     headerTitle : {
         flexDirection : 'row',

@@ -1,4 +1,5 @@
 import React from 'react';
+import {Platform} from 'react-native';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
 import LibraryHome from '../screens/libraryHome';
@@ -8,7 +9,6 @@ import BookViewHeader from '../shared/bookViewHeader';
 import LinearGradient from 'react-native-linear-gradient';
 
 const screens = {
-//console.warn('statusBarHeight: '+useHeaderHeight());
     LibraryHome : {
         screen : LibraryHome,
         navigationOptions : ({navigation})=>{
@@ -31,8 +31,6 @@ const screens = {
     Book : {
         screen : Book,
         navigationOptions : ({navigation})=>{
-            //console.warn("======>>>>"+navigation.getParam('newColor'));
-            //const isDarkBg = false;
             return{
                 headerTitle : ()=> <BookViewHeader 
                 headerText={navigation.getParam('bookDisplayName', '')}
@@ -59,7 +57,7 @@ const screens = {
 const bookLibraryStack = createStackNavigator(screens,{
     defaultNavigationOptions : {
         headerTintColor : '#444',
-        headerStyle : {backgroundColor : '#eee',height : 90},
+        headerStyle : {backgroundColor : '#eee',height : Platform.OS=='ios'?90:60},
 	//safeAreaInsets: { top: 40}
     }
 });

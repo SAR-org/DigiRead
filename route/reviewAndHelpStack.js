@@ -28,7 +28,7 @@ const screens = {
 const reviewAndHelpStack = createStackNavigator(screens,{
     defaultNavigationOptions : {
         headerTintColor : '#444',
-        headerStyle : {backgroundColor : '#eee',height : 90}
+        headerStyle : {backgroundColor : '#eee',height : Platform.OS=='ios'?90:60}
     }
 });
 

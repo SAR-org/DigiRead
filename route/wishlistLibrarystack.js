@@ -1,4 +1,5 @@
 import React from 'react';
+import {Platform} from 'react-native';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
 import WishList from '../screens/wishlist';
@@ -51,7 +52,7 @@ const screens = {
 const wishlistLibrarystack = createStackNavigator(screens,{
     defaultNavigationOptions : {
         headerTintColor : '#444',
-        headerStyle : {backgroundColor : '#eee',height : 90}
+        headerStyle : {backgroundColor : '#eee',height : Platform.OS=='ios'?90:60}
     }
 });
 
