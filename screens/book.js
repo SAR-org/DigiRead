@@ -6,8 +6,8 @@ import {
   Dimensions,
   Modal,
   TouchableHighlight,
-  AsyncStorage,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import Pdf from 'react-native-pdf';
 import LinearGradient from 'react-native-linear-gradient';
@@ -100,15 +100,15 @@ class Book extends React.Component {
 
   initBookDisplay = (bookId, downloadUri, bookDisplayName, favouriteBookIds) => {
     var that = this;
-    var headerLength = 15;
-    if (bookDisplayName.length > headerLength) {
-      bookDisplayName = bookDisplayName.substring(0, headerLength - 1);
-    }
+    // var headerLength = 15;
+    // if (bookDisplayName.length > headerLength) {
+    //   bookDisplayName = bookDisplayName.substring(0, headerLength - 1);
+    // }
 
     that.props.navigation.setParams({
       'bookId': bookId,
       'downloadUri': downloadUri,
-      'bookDisplayName': bookDisplayName + "...",
+      'bookDisplayName': bookDisplayName,
       'favouriteBookArr': favouriteBookIds,
       'isThisBookFav': this.isThisBookFavourite(favouriteBookIds, bookId),
     });

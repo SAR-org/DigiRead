@@ -21,12 +21,13 @@ class About extends React.Component {
                 showsVerticalScrollIndicator ={false}>
                 <View style={styles.titleContainer}>
                     <AntDesign name="pushpin" size={18} color="#99062C" />
-                    <Text style={styles.titleStyle}>What is DigiRead?</Text>
+                    <Text style={styles.titleStyle}>What is D-Read?</Text>
                 </View>
                 <View style = {styles.paraContainer}>
                     <Text style={styles.paraTextStyle}>
-                        Have you ever tried any other high-end book/e-book reading applications or devices?
-                        DigiRead is a mobile application for book readers who wish to carry a book along all the time.
+                        D-Read, shortened form of DigiRead. Have you ever tried any other high-end book/e-book reading applications or devices?
+                        D-Read is a mobile application for book readers who wish to carry a book along all the time, this is a free application to 
+                        read e-books without downloading them to your device.
                         This application contains more than 2500 story books,magazies,biographies, novels, etc, and 
                         we are committed to upload new collections everyday. We assure that we have got collections in 
                         different geners for every age group.
@@ -35,7 +36,7 @@ class About extends React.Component {
 
                 <View style={styles.titleContainer}>
                     <AntDesign name="pushpin" size={18} color="#99062C" />
-                    <Text style={styles.titleStyle}>What's special in DigiRead?</Text>
+                    <Text style={styles.titleStyle}>What's special in D-Read?</Text>
                 </View>
                 <View style = {styles.paraContainer}>
                     <Text style={styles.paraTextStyle}>

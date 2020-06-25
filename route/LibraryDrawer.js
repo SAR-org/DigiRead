@@ -2,10 +2,12 @@ import React from 'react';
 import {createDrawerNavigator,DrawerItems} from 'react-navigation-drawer';
 import {createAppContainer, SafeAreaView} from 'react-navigation';
 import {Dimensions,Image,View,Text,ScrollView} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 
 import bookLibraryStack from './booklibrarystack';
 import wishlistLibrarystack from './wishlistLibrarystack';
 import aboutyStack from './aboutStack';
+import declarationStack from './declarationStack';
 import reviewAndHelpStack from './reviewAndHelpStack';
 import { Icon } from 'react-native-elements';
 
@@ -14,9 +16,9 @@ const RootDrawerNavigator = createDrawerNavigator({
     Home : {
         screen : bookLibraryStack,
         navigationOptions: {
-            drawerLabel: 'DigiRead Home',
+            drawerLabel: 'D-Read Home',
             drawerIcon: (
-                <Icon name='home' size={25} color="#808080" />
+                <Icon name='home' size={25} color="#F3527B" />
             ),
           },
     },
@@ -25,25 +27,34 @@ const RootDrawerNavigator = createDrawerNavigator({
         navigationOptions: {
             drawerLabel: 'Wish List',
             drawerIcon: (
-                <Icon name='favorite' size={25} color="#808080" />
+                <Icon name='favorite' size={25} color="#F3527B" />
             ),
           },
     },
     About : {
         screen : aboutyStack,
         navigationOptions: {
-            drawerLabel: 'What is DigiRead?',
+            drawerLabel: 'What is D-Read?',
             drawerIcon: (
-                <Icon name='help' size={25} color="#808080" />
+                <Icon name='help' size={25} color="#F3527B" />
             ),
           },
     },
     ReviewUs : {
         screen : reviewAndHelpStack,
         navigationOptions: {
-            drawerLabel: 'Review Us',
+            drawerLabel: 'Feedback',
             drawerIcon: (
-                <Icon name='help' size={25} color="#808080" />
+                <Icon name='email' size={25} color="#F3527B" />
+            ),
+          },
+    },
+    Declaration : {
+        screen : declarationStack,
+        navigationOptions: {
+            drawerLabel: 'Declaration & disclaimer',
+            drawerIcon: (
+                <Icon name='feedback' size={25} color="#F3527B" />
             ),
           },
     },
@@ -52,7 +63,7 @@ const RootDrawerNavigator = createDrawerNavigator({
     contentComponent: (props) => (
         <SafeAreaView style={{flex : 1}}>
             <View style={{height: 160,alignItems: 'center', justifyContent: 'center'}}>
-            <Image source={require('../assets/icons/icon1.png')} style={{height: 160, width:200}}></Image>
+            <Image source={require('../assets/icons/icon2.png')} style={{height: 150, width:200,resizeMode:'contain'}}></Image>
             </View>
           <ScrollView>
             <DrawerItems {...props} />

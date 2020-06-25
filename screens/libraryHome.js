@@ -7,13 +7,12 @@ import {
   FlatList,
   Image,
   Dimensions,
-  AsyncStorage,
   TextInput,
   Keyboard,
-  StatusBar
 } from 'react-native';
-
+import AsyncStorage from '@react-native-community/async-storage';
 import Card from '../shared/card'
+import CardList from '../shared/cardlist';
 import axios from 'axios';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -55,7 +54,10 @@ class LibraryHome extends React.Component {
     gridViewActionBgColor: '#fff',
     displayModeIconColor: '#99062C',
     numberOfColumnsDisplay: '',
-    displayItemWidth: (ScreenWidth - 40) / 2.5 - 20,
+    displayItemWidth: (ScreenWidth - 40) / 2.8 - 20,
+    disPlayItemWidthRecentlyReleased : (ScreenWidth-40)/3.6-20,
+    numOfColumnInGrid : Math.floor((ScreenWidth-40)/90),
+    gridItemWidth : (ScreenWidth - 10) /3 - 20,
     didAppClosed : false,
   }
 
@@ -69,12 +71,13 @@ class LibraryHome extends React.Component {
     //this.getFavoritePvtConfigs();
     
     //this.loadFontsAsync();
+
     this.setState({ gridViewActionBgColor: '#BBD6D6', 
-                    numberOfColumnsDisplay: 2,
+                    numberOfColumnsDisplay: this.state.numOfColumnInGrid,
                     favouriteBookIds : this.props.screenProps.favouriteBookIds,
                     recentlyPublishedBooks: this.props.screenProps.recentlyPublishedBooks,
                     books : this.props.screenProps.books,
-                    categorisedBooks : this.props.screenProps.categorisedBooks });
+                    categorisedBooks : this.props.screenProps.categorisedBooks,});
 
     //console.warn("Passed Value====>>"+this.props.screenProps.testVal);
 
@@ -92,6 +95,8 @@ class LibraryHome extends React.Component {
   //   AsyncStorage.clear('myAppConfigsTest');
   //   console.warn("Cleared!")
   // }
+
+
 
 
 
@@ -114,7 +119,7 @@ class LibraryHome extends React.Component {
         this.setState({ recentlyPublishedBooks: recentlyPublishedBooks });
 
       }).catch(function (error) {
-        console.log('There has been a problem with your fetch operation: ' + error.message);
+        //console.log('There has been a problem with your fetch operation: ' + error.message);
         throw error;
 
       });
@@ -155,10 +160,53 @@ class LibraryHome extends React.Component {
     </Card>
   );
 
+  renderListStyleItems = ({ item }) => (
+    <CardList>
+      <TouchableOpacity onPress={() => this.viewBook(item)}>
+        <View style={{ width: this.state.displayItemWidth, ...styles.listItem }} >
+          <Image source={{ uri: item.imageUrl }} style={styles.imageInList} />
+          <View style={styles.bookDetailsInListViewStyle}>
+          <View style={styles.sublabelListContainer}>
+              <Text style={styles.titleLabel}>Book Name : </Text>
+              <Text 
+              style={styles.title}>{item.displayName}</Text>
+          </View>
+          <View style={styles.sublabelListContainer}>
+              <Text style={styles.titleLabel}>Author : </Text>
+              <Text style={styles.title}>{item.author}</Text>
+          </View>
+          <View style={styles.sublabelListContainer}>
+              <Text style={styles.titleLabel}>Language : </Text>
+              <Text style={styles.title}>{item.language}</Text>
+          </View>
+          <View style={{...styles.sublabelListContainer,paddingRight : 10}}>
+            <View style={styles.viewCountStyle}>
+              <FontAwesome5 name="book-reader" size={13} color="#333" />
+              <Text style={styles.sublabel}> : {item.view_count}</Text>
+            </View>
+            <View style={styles.favouriteCountStyle}>
+              <MaterialIcons name="favorite" size={13} color="red" />
+              <Text style={styles.sublabel}> : {item.favorite_count}</Text>
+            </View>
+
+            <View style={styles.downloadCountStyle}>
+               <Entypo name="download" size={13} color="green" />
+              <Text style={styles.sublabel}> : {item.download_count}</Text>
+            </View>
+
+          </View>
+          </View>
+
+        </View>
+
+      </TouchableOpacity>
+    </CardList>
+  );
+
   renderItemsRecentlyReleased = ({ item }) => (
     <Card>
       <TouchableOpacity onPress={() => this.viewBook(item)}>
-        <View style={{ width: this.state.displayItemWidth, ...styles.item }} >
+        <View style={{ width: this.state.disPlayItemWidthRecentlyReleased, ...styles.item }} >
           <Image source={{ uri: item.imageUrl }} style={styles.imageForRecentlyReleasedCont} />
         </View>
 
@@ -246,7 +294,7 @@ class LibraryHome extends React.Component {
         renderItem={this.renderItems}
         keyExtractor={item => item.id}
         initialNumToRender={5}
-        numColumns={2}
+        numColumns={this.state.numOfColumnInGrid}
         showsVerticalScrollIndicator={false}
       />
     );
@@ -257,7 +305,7 @@ class LibraryHome extends React.Component {
     return (
       <FlatList
         data={this.state.books}
-        renderItem={this.renderItems}
+        renderItem={this.renderListStyleItems}
         keyExtractor={item => item.id}
         initialNumToRender={5}
         numColumns={1}
@@ -324,7 +372,6 @@ class LibraryHome extends React.Component {
     return (
       <View style={styles.recentReleases}>
         <Text style={styles.categoryHeaderFont}>Recent Releases</Text>
-
         <FlatList
           horizontal
           data={this.state.recentlyPublishedBooks}
@@ -359,18 +406,19 @@ class LibraryHome extends React.Component {
   }
 
   gridViewDisplay = () => {
+    
     this.setState({
       gridViewActionBgColor: '#BBD6D6',
       listViewActionBgColor: '#fff',
-      numberOfColumnsDisplay: 2,
-      displayItemWidth: (ScreenWidth - 10) / 2 - 20,
+      numberOfColumnsDisplay: this.state.numOfColumnInGrid,
+      displayItemWidth: this.state.gridItemWidth,
       gridViewLoaded: true,
     })
   }
 
   categoryViewDisplay = () => {
     this.setState({
-      displayItemWidth: (ScreenWidth - 40) / 2.5 - 20
+      displayItemWidth: (ScreenWidth - 40) / 2.7 - 20
     });
   }
 
@@ -490,7 +538,7 @@ class LibraryHome extends React.Component {
         {this.state.renderCatView && this.renderAllCategoryPane()}
         {this.state.renderCatView && this.renderRecentlyPublishedBooks()}
         {this.state.renderCatView && this.renderCategorisedView()}
-        {!this.state.renderCatView && this.state.numberOfColumnsDisplay == 2
+        {!this.state.renderCatView && this.state.numberOfColumnsDisplay == this.state.numOfColumnInGrid
           && this.renderGridStyleBooks()}
         {!this.state.renderCatView && this.state.numberOfColumnsDisplay == 1
           && this.renderListStyleBooks()}
@@ -519,17 +567,42 @@ const styles = StyleSheet.create({
     marginVertical: 2,
     marginHorizontal: 2
   },
-  image: {
+  listItem : {
+    //flex : 1,
+    flexDirection : 'row',
+    backgroundColor: "#fff",
+    marginVertical: 2,
+    marginHorizontal: 2
+  },
+  imageInList : {
+    // alignItems : 'flex-start',
+    // justifyContent : 'flex-start',
+    flex : 2,
+    resizeMode: 'contain', 
     borderRadius: 6,
-    height: 100,
+    height: 110,
+  },
+  image: {
+    //flex: 1,
+    resizeMode: 'contain',
+    //aspectRatio: 1, 
+    borderRadius: 6,
+    height: 90,
   },
 
   imageForRecentlyReleasedCont: {
     borderRadius: 6,
+    resizeMode: 'contain',
     height: 70,
   },
   title: {
-    fontSize: 15,
+    fontSize: 13,
+    color: "#333",
+    alignSelf: "center",
+  },
+  titleLabel : {
+    fontWeight : 'bold',
+    fontSize: 13,
     color: "#333",
     alignSelf: "center"
   },
@@ -552,6 +625,16 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-end'
+  },
+  bookDetailsInListViewStyle : {
+    paddingLeft : 5,
+    flex : 3,
+    flexDirection : 'column',
+  },
+  sublabelListContainer : {
+    flexDirection: 'row',
+    flexWrap: "wrap",
+    paddingTop: 5,
   },
   sublabelContainer: {
     flexDirection: 'row',
@@ -637,7 +720,7 @@ const styles = StyleSheet.create({
     paddingTop : 0,
     paddingLeft: 10,
     //marginVertical: 10,
-    marginBottom : 10,
+    //marginBottom : 10,
     width: ScreenWidth,
     backgroundColor: "#DCE1E1",
     elevation: 5,
@@ -673,7 +756,7 @@ const styles = StyleSheet.create({
   },
   recentReleases: {
     paddingLeft: 10,
-    paddingTop: 5,
+    //paddingTop: 5,
     //marginVertical : 10,
     width: ScreenWidth,
     backgroundColor: "#DCE1E1",

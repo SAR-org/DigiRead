@@ -1,17 +1,17 @@
 import React from 'react';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
-import ReviewAndHelp from '../screens/reviewsAndHelp';
+import Declaration from '../screens/declaration';
 import Header from '../shared/header';
 import LinearGradient from 'react-native-linear-gradient';
 
 const screens = {
-    ReviewAndHelp : {
-        screen : ReviewAndHelp,
+    Declaration : {
+        screen : Declaration,
         navigationOptions : ({navigation})=>{
             return{
                 headerTitle : ()=> <Header 
-                headerText={'Feedback'} 
+                headerText={'Declaration'} 
                 navigation={navigation}/>,
                 headerBackground: ()=><LinearGradient
                       colors={['#F3527B', '#F9B3C5']}
@@ -25,11 +25,11 @@ const screens = {
     },
 }
 
-const reviewAndHelpStack = createStackNavigator(screens,{
+const declarationStack = createStackNavigator(screens,{
     defaultNavigationOptions : {
         headerTintColor : '#444',
         headerStyle : {backgroundColor : '#eee',height : Platform.OS=='ios'?90:60}
     }
 });
 
-export default createAppContainer(reviewAndHelpStack);
+export default createAppContainer(declarationStack);

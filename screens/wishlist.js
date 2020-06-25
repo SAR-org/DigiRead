@@ -7,10 +7,10 @@ import {
   FlatList,
   Image,
   Dimensions,
-  AsyncStorage
 } from 'react-native';
-
+import AsyncStorage from '@react-native-community/async-storage';
 import Card from '../shared/card'
+import CardList from '../shared/cardlist';
 import axios from 'axios';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Foundation  from 'react-native-vector-icons/Foundation';
@@ -33,6 +33,12 @@ class WishList extends React.Component {
         numberOfColumnsDisplay : '',
         displayItemWidth : (ScreenWidth - 40) / 2 - 20,
         viewStyleAtLastBookView : 'grid',
+        numOfColumnInGrid : Math.floor((ScreenWidth-40)/90),
+        gridItemWidth : (ScreenWidth - 10) /3 - 20,
+      }
+
+      componentDidMount(){
+        this.setState({displayItemWidth:this.state.gridItemWidth});
       }
 
     getFavBooks=async()=> {
@@ -51,6 +57,8 @@ class WishList extends React.Component {
           .then(res => {
             const books = res.data;
             this.setState({ books: books });
+          }).catch(function (error){
+            Alert.alert("Apologies","DigiRead is experiencing high traffic, App will be back shortly")
           })
       }else{
         this.setState({ books: [] });
@@ -87,7 +95,7 @@ class WishList extends React.Component {
     <Card>
     <TouchableOpacity onPress={()=>this.viewBook(item)}>
     <View style={{ width : this.state.displayItemWidth,...styles.item}} >
-      <Text style={styles.title}>{item.displayName}</Text>
+      {/* <Text style={styles.title}>{item.displayName}</Text> */}
       <Image source={{uri: item.imageUrl}} style={styles.image} />
       {/* <Text style={styles.sublabel}>Read count : </Text> */}
         <View style={styles.sublabelContainer}>
@@ -114,13 +122,56 @@ class WishList extends React.Component {
     </Card>
   );
 
+  renderListStyleItems = ({ item }) => (
+    <CardList>
+      <TouchableOpacity onPress={() => this.viewBook(item)}>
+        <View style={{ width: this.state.displayItemWidth, ...styles.listItem }} >
+          <Image source={{ uri: item.imageUrl }} style={styles.imageInList} />
+          <View style={styles.bookDetailsInListViewStyle}>
+          <View style={styles.sublabelListContainer}>
+              <Text style={styles.titleLabel}>Book Name : </Text>
+              <Text 
+              style={styles.title}>{item.displayName}</Text>
+          </View>
+          <View style={styles.sublabelListContainer}>
+              <Text style={styles.titleLabel}>Author : </Text>
+              <Text style={styles.title}>{item.author}</Text>
+          </View>
+          <View style={styles.sublabelListContainer}>
+              <Text style={styles.titleLabel}>Language : </Text>
+              <Text style={styles.title}>{item.language}</Text>
+          </View>
+          <View style={{...styles.sublabelListContainer,paddingRight : 10}}>
+            <View style={styles.viewCountStyle}>
+              <FontAwesome5 name="book-reader" size={13} color="#333" />
+              <Text style={styles.sublabel}> : {item.view_count}</Text>
+            </View>
+            <View style={styles.favouriteCountStyle}>
+              <MaterialIcons name="favorite" size={13} color="red" />
+              <Text style={styles.sublabel}> : {item.favorite_count}</Text>
+            </View>
+
+            <View style={styles.downloadCountStyle}>
+               <Entypo name="download" size={13} color="green" />
+              <Text style={styles.sublabel}> : {item.download_count}</Text>
+            </View>
+
+          </View>
+          </View>
+
+        </View>
+
+      </TouchableOpacity>
+    </CardList>
+  );
+
   renderGridStyleBooks = ()=> {
       return (
         <FlatList
           data={this.state.books}
           renderItem={this.renderItems}
           keyExtractor={item => item.id}
-          numColumns={2}
+          numColumns={this.state.numOfColumnInGrid}
         />
       );
     
@@ -130,7 +181,7 @@ class WishList extends React.Component {
     return (
       <FlatList
         data={this.state.books}
-        renderItem={this.renderItems}
+        renderItem={this.renderListStyleItems}
         keyExtractor={item => item.id}
         numColumns={1}
       />
@@ -150,8 +201,8 @@ class WishList extends React.Component {
     this.setState({gridViewActionBgColor : '#BB8E9A',
     listViewActionBgColor : '#fff',
     viewStyleAtLastBookView:'grid',
-    numberOfColumnsDisplay : 2,
-    displayItemWidth : (ScreenWidth - 40) / 2 - 20})
+    numberOfColumnsDisplay : this.state.numOfColumnInGrid,
+    displayItemWidth : this.state.gridItemWidth})
   }
 
   renderActionBar = ()=>{
@@ -189,7 +240,7 @@ class WishList extends React.Component {
       <View style={styles.container}>
           <NavigationEvents onDidFocus={()=>this.getFavBooks()} />
           {this.renderActionBar()}
-          {this.state.numberOfColumnsDisplay ==2 && this.renderGridStyleBooks()}
+          {this.state.numberOfColumnsDisplay ==this.state.numOfColumnInGrid && this.renderGridStyleBooks()}
           {this.state.numberOfColumnsDisplay ==1 && this.renderListStyleBooks()}
       </View>
     );
@@ -206,16 +257,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   item: {
-    //width: (ScreenWidth - 40) / 2 - 20,
     backgroundColor: "#fff",
-    paddingLeft : 10,
-    paddingRight : 10,
-    marginVertical: 10,
-    marginHorizontal: 10
+    elevation : 5,
+    shadowOffset : {width : 2, height : 2},
+    shadowColor : '#333',
+    shadowOpacity : 1,
+    shadowRadius : 5,
+    borderRadius : 6,
+  },
+  listItem : {
+    //flex : 1,
+    flexDirection : 'row',
+    backgroundColor: "#fff",
+    marginVertical: 2,
+    marginHorizontal: 2
+  },
+  imageInList : {
+    // alignItems : 'flex-start',
+    // justifyContent : 'flex-start',
+    flex : 2,
+    resizeMode: 'contain', 
+    borderRadius: 6,
+    height: 110,
+  },
+  titleLabel : {
+    fontWeight : 'bold',
+    fontSize: 13,
+    color: "#333",
+    alignSelf: "center"
   },
   image : {
     borderRadius : 6,
-    height : 100,
+    height : 90,
+    resizeMode: 'contain',
   },
   title: {
     fontSize: 15,
@@ -241,6 +315,16 @@ const styles = StyleSheet.create({
     flex : 1,
     flexDirection : 'row',
     justifyContent : 'flex-end'
+  },
+  bookDetailsInListViewStyle : {
+    paddingLeft : 5,
+    flex : 3,
+    flexDirection : 'column',
+  },
+  sublabelListContainer : {
+    flexDirection: 'row',
+    flexWrap: "wrap",
+    paddingTop: 5,
   },
   sublabelContainer: {
     flexDirection: 'row',

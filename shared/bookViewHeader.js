@@ -8,18 +8,23 @@ import {
     PermissionsAndroid,
     Alert,
     Platform,
+
 } from 'react-native';
 import axios from 'axios';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import RNFetchBlob from 'rn-fetch-blob'
+import CustomModal from './CustomModal';
 
 class BookViewHeader extends React.Component {
 
     state = {
         isThisBookFavorite: false,
         favoriteBookArray: null,
-        downloadUri: ''
+        downloadUri: '',
+        modalVisible: false,
+        modalHeaderValue: '',
+        modalTextValue: '',
     }
     componentDidMount() {
         this.setState({
@@ -71,60 +76,91 @@ class BookViewHeader extends React.Component {
 
     }
 
-    downloadBook = async() => {
+    releaseModal() {
+        const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
+        //this.setModalVisible(false);
+        wait(1000).then(() => this.setState({modalVisible : false}))
+    }
+
+    openModal =(headerText,messageText)=>{
+        this.setState({modalVisible : true,
+            modalHeaderValue : headerText,
+            modalTextValue : messageText});
+    }
+
+    changeModalMessage  = (headerText,messageText)=>{
+        this.setState({modalHeaderValue : headerText,
+            modalTextValue : messageText});
+    }
+
+    downloadBook = async () => {
 
         try {
-            if(Platform.OS == 'android'){
+            if (Platform.OS == 'android') {
                 const granted = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
                 );
                 if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                    this.openModal("Downloading","The book download is in-progress....")
+                    //Alert.alert("Downloading......")
                     const bookUri = this.props.downloadUri;
-                    let fileName = bookUri.substring(bookUri.lastIndexOf('/') + 1, bookUri.length)
+                    // let fileName = bookUri.substring(bookUri.lastIndexOf('/') + 1, bookUri.length)
+                    let fileName = this.props.headerText;
                     const { config, fs } = RNFetchBlob
-                    let DownloadDir = fs.dirs.DownloadDir    
+                    let DownloadDir = fs.dirs.DownloadDir
                     let options = {
                         fileCache: true,
                         addAndroidDownloads: {
                             useDownloadManager: true,
                             notification: true,
-                            path: DownloadDir + "/DigiRead/"+fileName, 
+                            path: DownloadDir + "/D-Read/" + fileName + ".pdf",
                             description: 'Downloading image.'
                         }
                     }
-                    config(options).fetch('GET', bookUri).then((res) => {
-                        // do some magic here
-                    })
+                    config(options).fetch('GET', bookUri).
+
+                        then((res) => {
+                            this.changeModalMessage("Success","Download is completed!");
+                            //Alert.alert("Download is completed!")
+                            this.releaseModal();
+                        })
                     this.increaseDownloadCount(this.props.thisBookId.toString());
-    
-                }else{
+
+                } else {
                     Alert.alert("Please allow permission", "Please allow permission to save file in your storage", [
-                          {
+                        {
                             text: "Noted",
                             onPress: () => null,
                             style: "cancel"
-                          }
-                        ]);
+                        }
+                    ]);
                 }
-            }else{
-                
+            } else {
+                this.openModal("Downloading","The book download is in-progress....")
                 const bookUri = this.props.downloadUri;
-                let fileName = bookUri.substring(bookUri.lastIndexOf('/') + 1, bookUri.length)
+                //let fileName = bookUri.substring(bookUri.lastIndexOf('/') + 1, bookUri.length)
+                let fileName = this.props.headerText;
                 const { config, fs } = RNFetchBlob
-                let DownloadDir =RNFetchBlob.fs.dirs.DocumentDir
+                let DownloadDir = RNFetchBlob.fs.dirs.DocumentDir
                 let options = {
                     fileCache: true,
-                    path: DownloadDir + "/DigiRead/"+fileName, 
+                    path: DownloadDir + "/DigiRead/" + fileName + ".pdf",
                     description: 'Downloading image.'
-                    }
+                }
 
-                    config(options).fetch('GET', bookUri).then((resp) => {
-                        RNFetchBlob.ios.openDocument(resp.data);
-                    })
+                config(options).fetch('GET', bookUri).then((resp) => {
+                    this.changeModalMessage("Success","Download is completed!,Please save the file");
+                            //Alert.alert("Download is completed!")
+                    this.releaseModal();
+                    RNFetchBlob.ios.openDocument(resp.data);
+                })
             }
-            
+
         } catch (err) {
-            console.warn(err);
+            this.changeModalMessage("Error!","Download Failed");
+                            //Alert.alert("Download is completed!")
+            this.releaseModal();
+            //console.warn(err);
         }
 
     }
@@ -156,10 +192,12 @@ class BookViewHeader extends React.Component {
     }
 
     getConfigJson = () => {
-        return { favorite: [], 
-            isBookDisplayDark: false, 
+        return {
+            favorite: [],
+            isBookDisplayDark: false,
             isFlipReadMode: true,
-            isPageFlipeAudoActive : true}
+            isPageFlipeAudoActive: true
+        }
     }
 
     isThisBookAlreadyFavourite = (favBookArr, bookId) => {
@@ -172,12 +210,12 @@ class BookViewHeader extends React.Component {
     render() {
         return (
             <View style={styles.header}>
-                <View style={styles.headerTitle}>
+                {/* <View style={styles.headerTitle}>
                     <Text
                         style={styles.headerText}>
                         {this.props.headerText}
                     </Text>
-                </View>
+                </View> */}
                 <TouchableOpacity
                     style={styles.favoriteStyle}
                     onPress={() => this.handleFavouriteAction()}>
@@ -197,6 +235,10 @@ class BookViewHeader extends React.Component {
                     onPress={() => this.downloadBook()}>
                     <Entypo name="download" size={24} color="#99062C" />
                 </TouchableOpacity>
+                <CustomModal 
+                    modalVisible = {this.state.modalVisible} 
+                    modalHeaderValue = {this.state.modalHeaderValue}
+                    modalTextValue = {this.state.modalTextValue}/>
             </View>
         );
     }

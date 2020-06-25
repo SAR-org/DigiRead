@@ -1,5 +1,5 @@
 {
-  "name": "DigiRead",
+  "name": "D-Read",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/masked-view": "^0.1.10",
     "axios": "^0.19.2",
     "formik": "^2.1.4",
