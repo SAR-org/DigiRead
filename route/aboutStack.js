@@ -11,7 +11,7 @@ const screens = {
         navigationOptions : ({navigation})=>{
             return{
                 headerTitle : ()=> <Header 
-                headerText={'About DigiRead'} 
+                headerText={'About D-Read'} 
                 navigation={navigation}/>,
                 headerBackground: ()=><LinearGradient
                       colors={['#F3527B', '#F9B3C5']}

@@ -10,10 +10,9 @@ import React from 'react';
 import {
   StyleSheet,
   View,
-  Text,
-  AsyncStorage,
   Dimensions,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import RootDrawerNavigator from './route/LibraryDrawer';
 import Splash from './screens/splash';
@@ -23,7 +22,7 @@ class App extends React.Component{
 
   arrayholder = [];
   state = {
-    appIsReady: false,
+    appNotReady: false,
     fontIsLoaded: false,
     favouriteBookIds: [],
     recentlyPublishedBooks: [],
@@ -65,10 +64,10 @@ class App extends React.Component{
       .then(res => {
 
         const recentlyPublishedBooks = res.data;
-        this.setState({ recentlyPublishedBooks: recentlyPublishedBooks });
-
+        this.setState({ recentlyPublishedBooks: recentlyPublishedBooks,});
       }).catch(function (error) {
-        console.log('There has been a problem with your fetch operation: ' + error.message);
+        this.setState({appNotReady:true});
+        //console.log('There has been a problem with your fetch operation: ' + error.message);
         throw error;
 
       });
@@ -95,13 +94,13 @@ class App extends React.Component{
 
           return sections;
         }, []);
-
         this.setState({
-          categorisedBooks: dataSource,
+          categorisedBooks: dataSource
         });
 
       }).catch(function (error) {
-        console.log('There has been a problem with your fetch operation: ' + error.message);
+        this.setState({appNotReady:true})
+        //console.log('There has been a problem with your fetch operation: ' + error.message);
         throw error;
 
       });
@@ -109,17 +108,18 @@ class App extends React.Component{
 
   render(){
     //global.currentScreenIndex = 0;
-    return(
-      <View style={styles.container}>
-      < AppContainer screenProps={{
-        favouriteBookIds: this.state.favouriteBookIds,
-        recentlyPublishedBooks: this.state.recentlyPublishedBooks,
-        books: this.state.books,
-        categorisedBooks: this.state.categorisedBooks,
-        handler : this.handler,
-      }} />
-      </View>
-    );
+      return(
+        <View style={styles.container}>
+        < AppContainer screenProps={{
+          favouriteBookIds: this.state.favouriteBookIds,
+          recentlyPublishedBooks: this.state.recentlyPublishedBooks,
+          books: this.state.books,
+          categorisedBooks: this.state.categorisedBooks,
+          handler : this.handler,
+        }} />
+        </View>
+      );
+    
   }
 }
 

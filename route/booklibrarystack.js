@@ -15,7 +15,7 @@ const screens = {
 
             return{
                 headerTitle : ()=> <Header 
-                headerText='DigiRead'
+                headerText='D-Read'
                 navigation={navigation}/>,
                 headerBackground: ()=>
                     <LinearGradient

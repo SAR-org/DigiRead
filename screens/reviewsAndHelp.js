@@ -14,9 +14,15 @@ import Textarea from 'react-native-textarea';
 import axios from 'axios';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import CustomModal from '../shared/CustomModal';
 
 
 class ReviewAndHelp extends React.Component {
+    state = {
+        modalVisible: false,
+        modalHeaderValue: '',
+        modalTextValue: '',
+    }
 
     sendFeedback = (values, { resetForm }) => {
         var feedbackJson = {
@@ -28,6 +34,7 @@ class ReviewAndHelp extends React.Component {
         feedbackJson.senderEmail = values.email;
         feedbackJson.feedback = values.feedback;
         const payload = JSON.stringify(feedbackJson);
+        this.openModal("Sending","Your feedback is being sent....")
 
         axios.post(
             'https://digi-read-email.herokuapp.com/feedback',
@@ -40,38 +47,61 @@ class ReviewAndHelp extends React.Component {
         ).then(res => {
 
             if (res.data == "Success") {
+                this.changeModalMessage("Thank you!","Your feedback is recorded");
                 resetForm({});
-                Alert.alert("Thank you!", "Your feedback is recorded", [
-                    {
-                        text: "Ok",
-                        onPress: () => null,
-                        style: "cancel"
-                    }]);
+                this.releaseModal();
+                
+
+                // Alert.alert("Thank you!", "Your feedback is recorded", [
+                //     {
+                //         text: "Ok",
+                //         onPress: () => null,
+                //         style: "cancel"
+                //     }]);
                 return
             }
             if (res.data == "Failed") {
-                Alert.alert("Oops!", "Looks like your email id is incorrect, may be a typo." +
-                    "Please correct it and resend it. Thank you!", [
-                    {
-                        text: "Ok",
-                        onPress: () => null,
-                        style: "cancel"
-                    }]);
+                this.changeModalMessage("Oops!","Looks like your email id is incorrect, may be a typo." +
+                    "Please correct it and resend it. Thank you!.");
+                this.releaseModal();
+                // Alert.alert("Oops!", "Looks like your email id is incorrect, may be a typo." +
+                //     "Please correct it and resend it. Thank you!", [
+                //     {
+                //         text: "Ok",
+                //         onPress: () => null,
+                //         style: "cancel"
+                //     }]);
             }
 
         }).catch(err => {
-            Alert.alert("Apologies!", "Our servers are experiencing high traffic." +
-                "Please try again later. Thank you.", [
-                {
-                    text: "Ok",
-                    onPress: () => null,
-                    style: "cancel"
-                }]);
+            this.changeModalMessage("Apologies!","Our servers are experiencing high traffic." +
+            "Please try again later. Thank you!.");
+                this.releaseModal();
+            // Alert.alert("Apologies!", "Our servers are experiencing high traffic." +
+            //     "Please try again later. Thank you.", [
+            //     {
+            //         text: "Ok",
+            //         onPress: () => null,
+            //         style: "cancel"
+            //     }]);
         });
+    }
 
+    releaseModal() {
+        const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
+        //this.setModalVisible(false);
+        wait(2000).then(() => this.setState({modalVisible : false}))
+    }
 
+    openModal =(headerText,messageText)=>{
+        this.setState({modalVisible : true,
+            modalHeaderValue : headerText,
+            modalTextValue : messageText});
+    }
 
-
+    changeModalMessage  = (headerText,messageText)=>{
+        this.setState({modalHeaderValue : headerText,
+            modalTextValue : messageText});
     }
 
     render() {
@@ -79,6 +109,11 @@ class ReviewAndHelp extends React.Component {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
                 <ScrollView>
                     <View style={styles.container}>
+                        <View style={{marginBottom: 10}}>
+                            <Text style={styles.textColor}>Hello D-Reader, We wish to hear from you. 
+                            We welcome your reviews,concerns, issues/bugs you faced in this app or even 
+                            we welcome your ideas to improve this system</Text>
+                        </View>
                         <Formik
                             initialValues={{ name: '', email: '', feedback: '' }}
                             onSubmit={(values, { resetForm }) => this.sendFeedback(values, { resetForm })}
@@ -134,6 +169,10 @@ class ReviewAndHelp extends React.Component {
                             )}
                         </Formik>
                     </View>
+                    <CustomModal 
+                    modalVisible = {this.state.modalVisible} 
+                    modalHeaderValue = {this.state.modalHeaderValue}
+                    modalTextValue = {this.state.modalTextValue}/>
                 </ScrollView>
             </TouchableWithoutFeedback>
         );
@@ -168,6 +207,12 @@ const styles = StyleSheet.create({
         color: '#99062C',
         borderColor: '#99062C',
         borderBottomWidth: StyleSheet.hairlineWidth,
+
+    },
+    textColor : {
+        color: '#99062C',
+        fontSize : 16,
+        textAlign : 'justify'
 
     },
     textareaContainer: {
