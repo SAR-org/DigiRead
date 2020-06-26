@@ -4,12 +4,12 @@ import {
     Text,
     View,
     TouchableOpacity,
-    AsyncStorage,
     PermissionsAndroid,
     Alert,
     Platform,
 
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -78,7 +78,7 @@ class BookViewHeader extends React.Component {
 
     releaseModal() {
         const wait = () => new Promise((resolve) => setTimeout(resolve, 2000));
-        //this.setModalVisible(false);
+        //this.setState({modalVisible:false});
         wait(1000).then(() => this.setState({modalVisible : false}))
     }
 
@@ -136,7 +136,7 @@ class BookViewHeader extends React.Component {
                     ]);
                 }
             } else {
-                this.openModal("Downloading","The book download is in-progress....")
+                this.openModal("Downloading","The book download is in-progress....,Please save the file when pops up")
                 const bookUri = this.props.downloadUri;
                 //let fileName = bookUri.substring(bookUri.lastIndexOf('/') + 1, bookUri.length)
                 let fileName = this.props.headerText;
@@ -147,13 +147,15 @@ class BookViewHeader extends React.Component {
                     path: DownloadDir + "/DigiRead/" + fileName + ".pdf",
                     description: 'Downloading image.'
                 }
-
+		//this.changeModalMessage("Success","Download is completed!,Please save the file");
+		this.releaseModal();
                 config(options).fetch('GET', bookUri).then((resp) => {
-                    this.changeModalMessage("Success","Download is completed!,Please save the file");
+                    //this.changeModalMessage("Success","Download is completed!,Please save the file");
                             //Alert.alert("Download is completed!")
-                    this.releaseModal();
+                    //this.releaseModal();
                     RNFetchBlob.ios.openDocument(resp.data);
                 })
+		this.increaseDownloadCount(this.props.thisBookId.toString());
             }
 
         } catch (err) {
